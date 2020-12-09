@@ -1,4 +1,4 @@
-defmodule ElixirBlockChain.BlockChain.Block do
+defmodule ElixirBlockChain.Blockchain.Block do
   @moduledoc """
     This module is the single block struct in a blockchain
   """

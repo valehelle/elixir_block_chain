@@ -1,30 +1,30 @@
-defmodule ElixirBlockChain.BlockChain do
+defmodule ElixirBlockChain.Blockchain do
   @moduledoc """
   This module contains the blockchain related functions
   """
   alias __MODULE__
-  alias ElixirBlockChain.BlockChain.Block
+  alias ElixirBlockChain.Blockchain.Block
 
   defstruct ~w(chain)a
 
-  @type t :: %BlockChain{
+  @type t :: %Blockchain{
           chain: [Block.t({})]
         }
 
-  @spec new :: BlockChain.t()
+  @spec new :: Blockchain.t()
   def new() do
     %__MODULE__{}
     |> add_genesis()
   end
 
-  @spec add_block(BlockChain.t(), any) :: BlockChain.t()
+  @spec add_block(Blockchain.t(), any) :: Blockchain.t()
   def add_block(blockchain = %__MODULE__{chain: chain}, data) do
     {last_block, _} = List.pop_at(chain, -1)
 
     %{blockchain | chain: chain ++ [Block.mine_block(last_block, data)]}
   end
 
-  @spec valid_chain?(BlockChain.t()) :: boolean()
+  @spec valid_chain?(Blockchain.t()) :: boolean()
   def valid_chain?(%__MODULE__{chain: chain}) do
     chain
     |> Enum.chunk_every(2, 1, :discard)

@@ -5,8 +5,8 @@ defmodule ElixirBlockChain.BlockchainTest do
 
   use ExUnit.Case
 
-  alias ElixirBlockChain.BlockChain
-  alias ElixirBlockChain.BlockChain.Block
+  alias ElixirBlockChain.Blockchain
+  alias ElixirBlockChain.Blockchain.Block
 
   describe "Blockchain" do
     setup [:initialize_blockchain]
@@ -22,7 +22,7 @@ defmodule ElixirBlockChain.BlockchainTest do
 
     test "adds a new block", %{blockchain: blockchain} do
       data = "foo"
-      blockchain = BlockChain.add_block(blockchain, data)
+      blockchain = Blockchain.add_block(blockchain, data)
       [_, block] = blockchain.chain
       assert block.data == data
     end
@@ -31,11 +31,11 @@ defmodule ElixirBlockChain.BlockchainTest do
       # add block into blockchain
       blockchain =
         blockchain
-        |> BlockChain.add_block("blockchain-data-block-1")
-        |> BlockChain.add_block("blockchain-data-block-2")
-        |> BlockChain.add_block("blockchain-data-block-3")
+        |> Blockchain.add_block("blockchain-data-block-1")
+        |> Blockchain.add_block("blockchain-data-block-2")
+        |> Blockchain.add_block("blockchain-data-block-3")
       # assert if blockchain is valid
-      assert BlockChain.valid_chain?(blockchain)
+      assert Blockchain.valid_chain?(blockchain)
     end
 
     test "when we temper data in existing chain", %{
@@ -43,20 +43,20 @@ defmodule ElixirBlockChain.BlockchainTest do
     } do
       blockchain =
         blockchain
-        |> BlockChain.add_block("blockchain-data-block-1")
-        |> BlockChain.add_block("blockchain-data-block-2")
-        |> BlockChain.add_block("blockchain-data-block-3")
+        |> Blockchain.add_block("blockchain-data-block-1")
+        |> Blockchain.add_block("blockchain-data-block-2")
+        |> Blockchain.add_block("blockchain-data-block-3")
 
       # validate if blockchain is valid
-      assert BlockChain.valid_chain?(blockchain)
+      assert Blockchain.valid_chain?(blockchain)
       # temper the blockchain, assume at location 2
       index = 2
       tempered_block = put_in(Enum.at(blockchain.chain, index).data, "tempered_data")
 
-      blockchain = %BlockChain{chain: List.replace_at(blockchain.chain, index, tempered_block)}
+      blockchain = %Blockchain{chain: List.replace_at(blockchain.chain, index, tempered_block)}
 
       # should invalidate the blockchain
-      refute BlockChain.valid_chain?(blockchain)
+      refute Blockchain.valid_chain?(blockchain)
     end
 
     test "when we temper hash in existing chain", %{
@@ -64,25 +64,25 @@ defmodule ElixirBlockChain.BlockchainTest do
     } do
       blockchain =
         blockchain
-        |> BlockChain.add_block("blockchain-data-block-1")
-        |> BlockChain.add_block("blockchain-data-block-2")
-        |> BlockChain.add_block("blockchain-data-block-3")
+        |> Blockchain.add_block("blockchain-data-block-1")
+        |> Blockchain.add_block("blockchain-data-block-2")
+        |> Blockchain.add_block("blockchain-data-block-3")
 
       # validate if blockchain is valid
-      assert BlockChain.valid_chain?(blockchain)
+      assert Blockchain.valid_chain?(blockchain)
       # temper the blockchain, assume at location 2
       index = 2
       tempered_block = put_in(Enum.at(blockchain.chain, index).hash, "tempered_hash")
 
-      blockchain = %BlockChain{chain: List.replace_at(blockchain.chain, index, tempered_block)}
+      blockchain = %Blockchain{chain: List.replace_at(blockchain.chain, index, tempered_block)}
 
       # should invalidate the blockchain
-      refute BlockChain.valid_chain?(blockchain)
+      refute Blockchain.valid_chain?(blockchain)
     end
     
 
 
   end
 
-  defp initialize_blockchain(context), do: Map.put(context, :blockchain, BlockChain.new())
+  defp initialize_blockchain(context), do: Map.put(context, :blockchain, Blockchain.new())
 end
