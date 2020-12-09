@@ -6,20 +6,17 @@ defmodule ElixirBlockChain.BlockChain.Block do
 
   @type t :: %Block{
           timestamp: pos_integer(),
-          last_hash: String.t(),
+          prev_hash: String.t(),
           hash: String.t(),
           data: any()
         }
         
-  defstruct ~w(timestamp last_hash hash data)a
+  defstruct ~w(timestamp prev_hash hash data)a
 
   @spec new(pos_integer(), String.t(), any()) :: Block.t()
-  def new(timestamp, last_hash, data) do
-    %__MODULE__{}
-    |> add_timestamp(timestamp)
-    |> add_last_hash(last_hash)
-    |> add_data(data)
-    |> add_hash()
+  def new(timestamp, prev_hash, data) do
+    hash = hash(timestamp, prev_hash, data)
+    %__MODULE__{timestamp: timestamp, prev_hash: prev_hash, data: data, hash: hash}
   end
 
   @spec get_str(Block.t()) :: String.t()
@@ -27,7 +24,7 @@ defmodule ElixirBlockChain.BlockChain.Block do
     """
     Block
     timestamp: #{block.timestamp}
-    last_hash: #{block.last_hash}
+    prev_hash: #{block.prev_hash}
     hash: #{block.hash}
     data: #{block.data}
     """
@@ -39,30 +36,21 @@ defmodule ElixirBlockChain.BlockChain.Block do
   end
 
   @spec mine_block(Block.t(), any()) :: Block.t()
-  def mine_block(%__MODULE__{hash: last_hash}, data) do
-    __MODULE__.new(get_timestamp(), last_hash, data)
+  def mine_block(%__MODULE__{hash: prev_hash}, data) do
+    __MODULE__.new(get_timestamp(), prev_hash, data)
   end
 
   @spec block_hash(Block.t()) :: any()
-  def block_hash(%__MODULE__{last_hash: last_hash, timestamp: timestamp, data: data}) do
-    hash(timestamp, last_hash, data)
+  def block_hash(%__MODULE__{prev_hash: prev_hash, timestamp: timestamp, data: data}) do
+    hash(timestamp, prev_hash, data)
   end
 
   # private functions
-  defp add_timestamp(%__MODULE__{} = block, timestamp), do: %{block | timestamp: timestamp}
-
-  defp add_data(%__MODULE__{} = block, data), do: %{block | data: data}
-
-  defp add_last_hash(%__MODULE__{} = block, last_hash), do: %{block | last_hash: last_hash}
-
-  defp add_hash(%__MODULE__{timestamp: timestamp, last_hash: last_hash, data: data} = block) do
-    %{block | hash: hash(timestamp, last_hash, data)}
-  end
 
   defp get_timestamp(), do: DateTime.utc_now() |> DateTime.to_unix(1_000_000)
 
-  defp hash(timestamp, last_hash, data) do
-    data = "#{timestamp}:#{last_hash}:#{Jason.encode!(data)}"
+  defp hash(timestamp, prev_hash, data) do
+    data = "#{timestamp}:#{prev_hash}:#{Jason.encode!(data)}"
     Base.encode16(:crypto.hash(:sha256, data))
   end
 

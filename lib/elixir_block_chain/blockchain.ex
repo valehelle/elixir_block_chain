@@ -29,17 +29,17 @@ defmodule ElixirBlockChain.BlockChain do
     chain
     |> Enum.chunk_every(2, 1, :discard)
     |> Enum.all?(fn [prev_block, block] ->
-      valid_last_hash?(prev_block, block) && valid_block_hash?(prev_block)
+      valid_prev_hash?(prev_block, block) && valid_block_hash?(prev_block)
     end)
   end
 
   # Private functions
 
-  defp valid_last_hash?(
+  defp valid_prev_hash?(
          %Block{hash: hash} = _last_block,
-         %Block{last_hash: last_hash} = _current_block
+         %Block{prev_hash: prev_hash} = _current_block
        ) do
-    hash == last_hash
+    hash == prev_hash
   end
 
   defp valid_block_hash?(current_block) do

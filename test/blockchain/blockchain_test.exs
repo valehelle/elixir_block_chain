@@ -15,7 +15,7 @@ defmodule ElixirBlockChain.BlockchainTest do
       assert %Block{
                data: "genesis data",
                hash: "F277BF9150CD035D55BA5B48CB5BCBE8E564B134E5AD0D56E439DD04A1528D3B",
-               last_hash: "-",
+               prev_hash: "-",
                timestamp: 1_599_909_623_805_627
              } == hd(blockchain.chain)
     end
